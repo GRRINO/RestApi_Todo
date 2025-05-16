@@ -1,0 +1,22 @@
+# Ignore client dependencies and build files
+/client/node_modules/
+/client/dist/
+/client/.env
+
+# Ignore server dependencies and build files
+/server/node_modules/
+/server/dist/
+/server/.env
+
+# OS and IDE related
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# TypeScript build info
+*.tsbuildinfo

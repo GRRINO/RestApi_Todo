@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import User from "../models/user";
 import generateToken from "../utils/generateToken";
+import asyncHandler from "../utils/asyncHandler";
+import { AuthRequest } from "../middlewares/authMiddleware";
 
 export const registerUser = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -32,7 +34,7 @@ export const registerUser = async (req: Request, res: Response) => {
 };
 
 // export const loginUser = async (req: Request, res: Response) => {
-  
+
 //   const { email, password } = req.body;
 
 //   const existingUser = await User.findOne({ email });
@@ -50,8 +52,7 @@ export const registerUser = async (req: Request, res: Response) => {
 //   }
 // };
 
-export const userLogin = async (req: Request, res: Response) => {
-  
+export const userLogin = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   const existingUser = await User.findOne({ email });
@@ -67,8 +68,46 @@ export const userLogin = async (req: Request, res: Response) => {
     res.status(401);
     throw new Error("Invalid credentials");
   }
-};
+});
 
-// export const logoutUser = async(req:Request,res:Response)=>{
+export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
+  res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
+  res.status(200).json({ message: "User logout" });
+});
 
-// }
+export const getUserProfile = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const user = {
+      _id: req.user?._id,
+      name: req.user?.name,
+
+      email: req.user?.email,
+    };
+    res.status(200).json(user);
+  }
+);
+
+export const updateUserProfile = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const user = await User.findById(req.user?._id);
+    if (!user) {
+      res.status(404);
+      throw new Error("User not found");
+    }
+
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    user.password = req.body.password || user.password;
+    const updatedUser = await user.save();
+
+    const selectedUser = {
+      _id: updatedUser._id,
+      name: updatedUser.name,
+
+      email: updatedUser.email,
+
+    }
+
+    res.status(200).json(selectedUser);
+  }
+);

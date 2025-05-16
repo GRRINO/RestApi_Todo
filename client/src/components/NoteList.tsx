@@ -60,12 +60,12 @@ const NoteList = () => {
 
   return (
     <div>
-      <h2>Note List</h2>
+      <h2 className=" text-2xl font-bold">Note List</h2>
       <ul>
         {notes.map((note, index) => (
-          <li key={index}>
-            {note.title}{" "}
-            <button type="button" onClick={() => handleDeleteNote(note._id)}>
+          <li className=" flex items-center gap-2 mb-2" key={index}>
+            <p className=" font-semibold">{note.title}{" "}</p>
+            <button className=" font-medium text-red-500 underline" type="button" onClick={() => handleDeleteNote(note._id)}>
               delete
             </button>
             <button
@@ -79,6 +79,7 @@ const NoteList = () => {
       </ul>
       <form onSubmit={submitHandler}>
         <input
+        className=" border p-2 text-sm mr-2"
           value={msg}
           onChange={(e) => {
             e.target.value;
@@ -86,7 +87,7 @@ const NoteList = () => {
           }}
           type="text"
         />
-        <button>{editMode ? "Update" : "Create"}</button>
+        <button className=" text-sm text-white bg-black py-2 px-4 border ">{editMode ? "Update" : "Create"}</button>
       </form>
     </div>
   );
