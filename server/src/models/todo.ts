@@ -1,12 +1,14 @@
-import mongoose,{ Schema } from "mongoose";
-
+import mongoose, { Schema } from "mongoose";
 
 const todoSchema = new Schema({
-    title : {
-        type : String,
-        require : true,
-    }
-})
+  title: {
+    type: String,
+    required: true,
+  },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+});
 
-export const Todo = mongoose.model("Todo", todoSchema)
-
+export const Todo = mongoose.model("Todo", todoSchema);

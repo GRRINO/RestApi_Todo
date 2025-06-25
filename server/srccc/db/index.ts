@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export const connectDB = async () => {
+export const connectDb = async () => {
   try {
     let DB_CONNECTION_STRING = "";
     if (process.env.NODE_ENV === "development") {
@@ -10,10 +10,12 @@ export const connectDB = async () => {
       DB_CONNECTION_STRING = process.env.MONGODB_URI!;
     }
 
-    const dbResponse = await mongoose.connect(DB_CONNECTION_STRING);
-    console.log("DB connected Successfully.", dbResponse.connection.host);
+    const dbResponse = await mongoose.connect(DB_CONNECTION_STRING)
+    console.log("Db connected successfully",dbResponse.connection.host)
+
   } catch (error) {
-    console.log("DB Connection error", error);
-    process.exit(1);
+    console.log("Db connnection error",error);
+    process.exit
   }
 };
+

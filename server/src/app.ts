@@ -1,32 +1,35 @@
-import express, { json } from"express";
-import dotenv from "dotenv"
-import { connectDb } from "./db";
-import userRoute from "./routes/user"
-import todoRoute from "./routes/todo"
-import cors from "cors"
+import express, { json } from "express";
+import dotenv from "dotenv";
+import { connectDB } from "./db";
+import todoRoutes from "./routes/todo";
+import userRoutes from "./routes/user";
+import cors from "cors";
 import errorHandler from "./middlewares/errorHandler";
-import cookieParser from"cookie-parser"
+import cookieParser from "cookie-parser";
 
 dotenv.config({
-    path:".env"
-})
+  path: ".env",
+});
 
-const app = express()
+const app = express();
 
-app.use(cors({
-    origin : process.env.CLIENT_URL
-}))
-app.use(json())
-app.use(cookieParser())
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
+app.use(json());
+app.use(cookieParser());
 
-app.use(userRoute)
-app.use(todoRoute)
+app.use(userRoutes);
+app.use(todoRoutes);
 
-app.use(errorHandler)
+app.use(errorHandler);
 
-const PORT = process.env.PORT
+const PORT = process.env.PORT || "4000";
 
-app.listen(PORT,()=>{
-    connectDb()
-    console.log("Server is running on : ",PORT)
-})
+app.listen(PORT, () => {
+  connectDB();
+  console.log("server is running on : " + PORT);
+});

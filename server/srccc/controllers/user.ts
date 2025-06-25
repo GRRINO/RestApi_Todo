@@ -1,40 +1,58 @@
 import { Request, Response } from "express";
-import { User } from "../models/user";
+import User from "../models/user";
 import generateToken from "../utils/generateToken";
 import asyncHandler from "../utils/asyncHandler";
 import { AuthRequest } from "../middlewares/authMiddleware";
 
-export const registerUser = asyncHandler(
-  async (req: Request, res: Response) => {
-    const { name, email, password } = req.body;
+export const registerUser = async (req: Request, res: Response) => {
+  const { name, email, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+  const existingUser = await User.findOne({ email });
 
-    if (existingUser) {
-      res.status(400);
-      throw new Error("Email is already exists.");
-    }
-
-    const user = await User.create({
-      name,
-      email,
-      password,
-    });
-
-    if (user) {
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-      });
-    } else {
-      res.status(400);
-      throw new Error("Something went wrong.");
-    }
+  if (existingUser) {
+    res.status(400);
+    // .json({message:"Email is already exist"})
+    throw new Error("Email is already exist");
   }
-);
 
-export const loginUser = asyncHandler(async (req: Request, res: Response) => {
+  const user = await User.create({
+    name,
+    email,
+    password,
+  });
+
+  if (user) {
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    });
+  } else {
+    res.status(400);
+    throw new Error("Something went wrong");
+  }
+};
+
+// export const loginUser = async (req: Request, res: Response) => {
+
+//   const { email, password } = req.body;
+
+//   const existingUser = await User.findOne({ email });
+
+//   if (existingUser && (await existingUser.matchPassword(password))) {
+//     generateToken(res, existingUser._id);
+//     res.status(200).json({
+//       _id: existingUser._id,
+//       name: existingUser.name,
+//       email: existingUser.email,
+//     });
+//   } else {
+//     res.status(401);
+//     throw new Error("Invalid credentials");
+//   }
+// };
+
+export const userLogin = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   const existingUser = await User.findOne({ email });
@@ -48,18 +66,13 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     });
   } else {
     res.status(401);
-    throw new Error("Invaild credentials.");
+    throw new Error("Invalid credentials");
   }
 });
 
-// DELETE -> /logout
 export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
-  res.cookie("token", "", {
-    httpOnly: true,
-    expires: new Date(0),
-  });
-
-  res.status(200).json({ message: "User logout." });
+  res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
+  res.status(200).json({ message: "User logout" });
 });
 
 export const getUserProfile = asyncHandler(
@@ -67,6 +80,7 @@ export const getUserProfile = asyncHandler(
     const user = {
       _id: req.user?._id,
       name: req.user?.name,
+
       email: req.user?.email,
     };
     res.status(200).json(user);
@@ -76,10 +90,9 @@ export const getUserProfile = asyncHandler(
 export const updateUserProfile = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const user = await User.findById(req.user?._id);
-
     if (!user) {
       res.status(404);
-      throw new Error("User not found.");
+      throw new Error("User not found");
     }
 
     user.name = req.body.name || user.name;
@@ -90,8 +103,11 @@ export const updateUserProfile = asyncHandler(
     const selectedUser = {
       _id: updatedUser._id,
       name: updatedUser.name,
+
       email: updatedUser.email,
-    };
+
+    }
+
     res.status(200).json(selectedUser);
   }
 );

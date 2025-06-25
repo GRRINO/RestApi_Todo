@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const registerSchema = z.object({
+export const updateProfileSchema = z.object({
   name: z
     .string()
     .min(3, { message: "Name must contain at least 3 character(s)" })
@@ -9,5 +9,8 @@ export const registerSchema = z.object({
   email: z.string().email().nonempty(),
   password: z
     .string()
-    .min(6, { message: "Password must contain at least 6 character(s)" }),
+    .optional()
+    .refine((val) => !val || val.length >= 6, {
+      message: "Password must contain at least 6 character(s)",
+    }),
 });
